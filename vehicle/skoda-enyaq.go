@@ -12,6 +12,7 @@ import (
 )
 
 // https://github.com/lendy007/skodaconnect
+// https://github.com/robinostlund/volkswagencarnet
 
 // Enyaq is an api.Vehicle implementation for Skoda Enyaq cars
 type Enyaq struct {

@@ -4,11 +4,13 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/evcc-io/evcc/util"
 	"github.com/evcc-io/evcc/util/request"
 	"github.com/evcc-io/evcc/util/urlvalues"
 	"github.com/evcc-io/evcc/vehicle/vag"
+	"golang.org/x/oauth2"
 )
 
 const (
@@ -36,12 +38,25 @@ func (v *Service) Exchange(q url.Values) (*vag.Token, error) {
 		return nil, err
 	}
 
+	return &vag.Token{
+		Token: oauth2.Token{
+			AccessToken: q.Get("id_token"),
+			Expiry:      time.Now().Add(23 * time.Hour),
+		},
+		IDToken: q.Get("id_token"),
+	}, nil
+
+	// fmt.Println("data", v.data)
+	// fmt.Println("q", q)
+
 	data := url.Values{
 		"auth_code": {q.Get("code")},
 		"id_token":  {q.Get("id_token")},
 	}
 
 	urlvalues.Merge(data, v.data, q)
+
+	// fmt.Println("res", data)
 
 	var res vag.Token
 
