@@ -47,9 +47,11 @@ func (v *Service) Exchange(q url.Values) (*vag.Token, error) {
 
 	uri := fmt.Sprintf("%s/v1/authentication/token?systemId=%s", skoda.BaseURI, "TECHNICAL")
 	req, err := request.New(http.MethodPost, uri, request.MarshalJSON(data), map[string]string{
-		"Content-type":  request.JSONContent,
-		"Authorization": "Bearer " + q.Get("id_token"),
-		"user-agent":    "okhttp/4.9.3",
+		"Content-type":    request.JSONContent,
+		"Authorization":   "Bearer " + q.Get("id_token"),
+		"user-agent":      "OneConnect/000000117 CFNetwork/1240.0.4 Darwin/20.6.0",
+		"accept-language": "de-de",
+		"accept":          "*/*",
 	})
 	if err == nil {
 		err = v.DoJSON(req, &res)
