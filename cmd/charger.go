@@ -81,12 +81,16 @@ func runCharger(cmd *cobra.Command, args []string) {
 	}
 
 	var flagUsed bool
-	for _, v := range chargers {
+	for name, v := range chargers {
 		if current != noCurrent {
 			flagUsed = true
 
-			if err := v.MaxCurrent(current); err != nil {
-				log.ERROR.Println("set current:", err)
+			if vv, ok := v.(api.CurrentLimiter); ok {
+				if err := vv.MaxCurrent(current); err != nil {
+					log.ERROR.Println("set current:", err)
+				}
+			} else {
+				log.ERROR.Printf("charger %s does not implement CurrentLimiter:", name)
 			}
 		}
 

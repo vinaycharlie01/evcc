@@ -26,7 +26,12 @@ func init() {
 	chargerRampCmd.Flags().StringP(flagDelay, "", "1s", "ramp delay")
 }
 
-func ramp(c api.Charger, digits int, delay time.Duration) {
+type currentControllable interface {
+	api.Charger
+	api.CurrentLimiter
+}
+
+func ramp(c currentControllable, digits int, delay time.Duration) {
 	steps := math.Pow10(digits)
 	delta := 1 / steps
 
@@ -104,11 +109,17 @@ func runChargerRamp(cmd *cobra.Command, args []string) {
 		log.ERROR.Fatalln(err)
 	}
 
-	for _, c := range chargers {
-		if _, ok := c.(api.ChargerEx); digits > 0 && !ok {
-			log.ERROR.Fatalln("charger does not support mA control")
+	for name, c := range chargers {
+		cc, ok := c.(currentControllable)
+		if !ok {
+			log.ERROR.Fatalf("charger %s does not implement CurrentLimiter:", name)
 		}
-		ramp(c, digits, delay)
+
+		if _, ok := c.(api.ChargerEx); digits > 0 && !ok {
+			log.ERROR.Fatalf("charger %s does not support mA control", name)
+		}
+
+		ramp(cc, digits, delay)
 	}
 
 	// wait for shutdown
