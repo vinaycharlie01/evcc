@@ -18,6 +18,7 @@ import (
 	"github.com/evcc-io/evcc/vehicle/vag/cariad"
 )
 
+// https://emea.bff.cariad.digital/login/v1/idk/openid-configuration
 const WellKnown = cariad.BaseURL + "/login/v1/idk/openid-configuration"
 
 var Config = &oidc.ProviderConfig{
@@ -41,14 +42,12 @@ func New(log *util.Logger, q url.Values) *Service {
 
 // https://github.com/arjenvrh/audi_connect_ha/issues/133
 
-const (
-	qmSecret   = "e47866378ef0658ce75d71007a809f34616b9635e2ec228245784c1f63e88d06"
-	qmClientId = "c95f4fd2"
-)
+var qmSecret = []byte{26, 256 - 74, 256 - 103, 37, 256 - 84, 23, 256 - 102, 256 - 86, 78, 256 - 125, 256 - 85, 256 - 26, 113, 256 - 87, 71, 109, 23, 100, 24, 256 - 72, 91, 256 - 41, 6, 256 - 15, 67, 108, 256 - 95, 91, 256 - 26, 71, 256 - 104, 256 - 100}
+
+const qmClientId = "01da27b0"
 
 func qmauth(ts int64) string {
-	secret, _ := hex.DecodeString(qmSecret)
-	hash := hmac.New(sha256.New, secret)
+	hash := hmac.New(sha256.New, qmSecret)
 	hash.Write([]byte(strconv.FormatInt(ts, 10)))
 	return hex.EncodeToString(hash.Sum(nil))
 }
