@@ -5,6 +5,7 @@ import (
 	"io"
 	"io/fs"
 	"log"
+	"fmt"
 
 	"github.com/evcc-io/evcc/cmd"
 	"github.com/evcc-io/evcc/server/assets"
@@ -39,6 +40,7 @@ func init() {
 func main() {
 	// suppress deprecated: golang.org/x/oauth2: Transport.CancelRequest no longer does anything; use contexts
 	// see https://github.com/golang/oauth2/issues/487
+	fmt.Println("Hello")
 	log.SetOutput(io.Discard)
 
 	cmd.Execute()
